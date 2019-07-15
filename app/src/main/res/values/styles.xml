@@ -6,10 +6,10 @@
         <item name="colorPrimary">@color/connect4_background</item>
         <item name="colorPrimaryDark">@color/connect4_background</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:windowNoTitle">true</item>
+        <!-- <item name="android:windowNoTitle">true</item>
         <item name="android:windowActionBar">false</item>
         <item name="android:windowFullscreen">true</item>
-        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowContentOverlay">@null</item> -->
     </style>
 
 

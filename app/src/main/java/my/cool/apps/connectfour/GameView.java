@@ -8,9 +8,13 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 
+import my.cool.apps.connectfour.Model.Board;
+
 public class GameView extends View {
 
     private int width, height, cellWidth; // width and height of this view in pixels
+    private Board board;
+
 
     public GameView(Context context) {
         super(context);
@@ -70,10 +74,19 @@ public class GameView extends View {
             canvas.drawCircle(x, y, (float)((cellWidth / 2)*.8), paint);
             x += cellWidth ;
         }
-
-
+        /** mapped screen cordinates to a disc.
+       for(int i =0;i < 7;i++)
+       {
+           for (int j = 0;j <6 ;j++)
+           {
+               canvas.drawCircle((cellWidth / 2) + i * cellWidth, (cellWidth * 3 / 2) + j * cellWidth, (float) ((cellWidth / 2) * .8), paint);
+           }
+       }*/
     }
-    /**
+    public void setBoard(Board board)
+    {
+        this.board = board;
+    }
     public interface DiscClickListener {
         void clicked(int index);
     }
@@ -94,6 +107,16 @@ public class GameView extends View {
         return true;
     }
 
-    public int locateDisc(float x, float y) {return 0; }
-*/}
+    public int locateDisc(float x, float y)
+    {
+        for(int i = 0;i< 7;i ++) {
+            if(y <= (cellWidth ))
+                if( x<= (cellWidth *(i+1)))//x >= (cellWidth*i) &&)
+                {
+                    return i;
+                }
+        }
+        return 9;
+    }
+}
 
