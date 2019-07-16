@@ -44,6 +44,7 @@ public class GameView extends View {
     public void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         Paint paint = new Paint();
+        canvas.drawColor(Color.CYAN);
         /** Background of the board. */
         paint.setColor(Color.LTGRAY);
         canvas.drawRect(0,cellWidth,width,width,paint);
@@ -74,13 +75,21 @@ public class GameView extends View {
         /** Draws the row of circles
          * at the top of board for player
          * to click on.*/
-        if(turn)
+        paint.setTextSize(150);
+        if(board.hasWinningRow())
+        {
+            paint.setColor(Color.MAGENTA);
+            canvas.drawText(player.name() +" Has Won!!",(width/2)-550,(height/4)*3,paint);
+        }
+        else if(turn)
         {
             paint.setColor(Color.RED);
+            canvas.drawText("Player 1's Turn",(width/2)-500,(height/4)*3,paint);
         }
         else
         {
             paint.setColor(Color.YELLOW);
+            canvas.drawText("Player 2's Turn",(width/2)-500,(height/4)*3,paint);
         }
         float x = cellWidth / 2;
         float y = cellWidth / 2;
@@ -129,6 +138,7 @@ public class GameView extends View {
                     for( Board.Place winPlace: board.winningRow())
                     {
                         discs[winPlace.x][winPlace.y] = new Player(player.name(),Color.BLUE);
+                        turn = !turn;
                     }
                 }
             }
@@ -167,10 +177,17 @@ public class GameView extends View {
                     break;
                 }
                 int index = locateDisc(event.getX(), event.getY());
-                if (index >= 0) { discClickListener.clicked(index); }
-                if(board.isColumnFull(index))
-                    break;
-                turn = !turn;
+                if (index >= 0) {
+                    if(board.isColumnFull(index))
+                        break;
+                    else
+                        {
+                        discClickListener.clicked(index);
+                        turn = !turn;
+                    }
+
+                }
+
                 break;
         }
         return true;
