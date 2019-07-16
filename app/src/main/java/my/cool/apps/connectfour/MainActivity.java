@@ -1,5 +1,6 @@
 package my.cool.apps.connectfour;
 
+import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Toast;
@@ -17,18 +18,22 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         board = new Board();
         gameView = new GameView(this);
-        gameView.setBoard(board);
-        setContentView(R.layout.activity_main);
-        setContentView(gameView);
-        gameView.setDiscClickListener(i -> toast(i + " was clicked"));
-        Player player = new Player("Me");
-        board.dropDisc(0, player);
-        board.dropDisc(2, player);
-        gameView.invalidate();
 
-    }
-    private void toast(String msg)
-    {
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+        Player[] players = new Player[2];
+        players[0] = new Player("Player 1",Color.RED);
+        players[1] = new Player("Player 2",Color.YELLOW);
+
+        gameView.setBoard(board);
+        setContentView(gameView);
+
+        gameView.setDiscClickListener(new GameView.DiscClickListener() {
+            @Override
+            public void clicked(int index) {
+                board.dropDisc(index, players[0]);
+                gameView.invalidate();
+            }
+        });
+
+
     }
 }

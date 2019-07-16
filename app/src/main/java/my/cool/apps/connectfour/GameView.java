@@ -9,12 +9,13 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 
 import my.cool.apps.connectfour.Model.Board;
+import my.cool.apps.connectfour.Model.Player;
 
 public class GameView extends View {
 
-    private int width, height, cellWidth; // width and height of this view in pixels
+    private int width, height, cellWidth,col = -1,row = -1; // width and height of this view in pixels
     private Board board;
-
+    private Player player = null;
 
     public GameView(Context context) {
         super(context);
@@ -35,18 +36,18 @@ public class GameView extends View {
             });
         }
     }
-
     @Override
     public void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         Paint paint = new Paint();
-        /** background board. */
+        /** Background of the board. */
         paint.setColor(Color.LTGRAY);
         canvas.drawRect(0,cellWidth,width,width,paint);
-
+        /** Draws the lines to form a grid
+         * on the board. */
         paint.setColor(Color.DKGRAY);
         paint.setStrokeWidth(8);
-        /** vertical lines. */
+        //Vertical Lines
         float sX = cellWidth;
         float sY = cellWidth;
         float eX = cellWidth;
@@ -56,7 +57,7 @@ public class GameView extends View {
             sX += cellWidth;
             eX += cellWidth ;
         }
-        /** horizontal lines. */
+        //Horizontal Lines
          sX = 0;
          sY = cellWidth;
          eX = width;
@@ -66,27 +67,49 @@ public class GameView extends View {
             sY += cellWidth;
             eY += cellWidth ;
         }
-        /** line of Circles */
-        paint.setColor(Color.BLUE);
+        /** Draws the row of circles
+         * at the top of board for player
+         * to click on.*/
+        if(player == null)
+        {
+            paint.setColor(Color.YELLOW);
+        }
+        else
+        {
+            paint.setColor(player.color());
+        }
         float x = cellWidth / 2;
         float y = cellWidth / 2;
         for (int i = 0; i < 7; i++) {
             canvas.drawCircle(x, y, (float)((cellWidth / 2)*.8), paint);
             x += cellWidth ;
         }
-        /** mapped screen cordinates to a disc.
-       for(int i =0;i < 7;i++)
-       {
-           for (int j = 0;j <6 ;j++)
-           {
-               canvas.drawCircle((cellWidth / 2) + i * cellWidth, (cellWidth * 3 / 2) + j * cellWidth, (float) ((cellWidth / 2) * .8), paint);
-           }
-       }*/
-    }
+
+        /** Screen coordinates are mapped
+         * to a cell on the board. */
+
+        if(col <= 6 && row <= 5) {
+            canvas.drawCircle((cellWidth / 2) + col * cellWidth,
+                    (cellWidth * 3 / 2) + row * cellWidth,
+                    (float) ((cellWidth / 2) * .8), paint);
+        }
+
+    }//end of onDraw()
     public void setBoard(Board board)
     {
         this.board = board;
+        board.setChangeListener((c,r,p) ->
+        {
+            if(c <= 6 && r <= 5) {
+                col = c;
+                row = r;
+                player = p;
+            }
+        });
     }
+
+
+    //---------------------------------------------------------------------------------------------
     public interface DiscClickListener {
         void clicked(int index);
     }
@@ -101,7 +124,8 @@ public class GameView extends View {
         switch (event.getActionMasked()) {
             case MotionEvent.ACTION_DOWN:
                 int index = locateDisc(event.getX(), event.getY());
-                if (index >= 0) { discClickListener.clicked(index); }
+                if (index >= 0) { discClickListener.clicked(index);
+                    }
                 break;
         }
         return true;
@@ -116,7 +140,7 @@ public class GameView extends View {
                     return i;
                 }
         }
-        return 9;
+        return -1;
     }
 }
 

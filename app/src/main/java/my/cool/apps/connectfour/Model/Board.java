@@ -13,7 +13,6 @@ public class Board {
 
     /** To notify when a player's disc is dropped and placed. */
     public interface ChangeListener {
-
         /** Called when a player's disc is dropped. */
         void discDropped(int x, int y, Player player);
     }
