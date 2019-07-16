@@ -26,12 +26,9 @@ public class MainActivity extends AppCompatActivity {
         gameView.setBoard(board);
         setContentView(gameView);
 
-        gameView.setDiscClickListener(new GameView.DiscClickListener() {
-            @Override
-            public void clicked(int index) {
-                board.dropDisc(index, players[0]);
-                gameView.invalidate();
-            }
+        gameView.setDiscClickListener(index ->  {
+            board.dropDisc(index, players[0]);
+            gameView.invalidate();
         });
 
 

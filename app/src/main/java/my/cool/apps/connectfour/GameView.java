@@ -8,6 +8,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 
+import java.util.List;
+
 import my.cool.apps.connectfour.Model.Board;
 import my.cool.apps.connectfour.Model.Player;
 
@@ -115,7 +117,19 @@ public class GameView extends View {
                 row = r;
                 player = p;
             }
-            discs[col][row] = player;
+            if(board.isWonBy(player))
+            {
+                player = new Player(player.name(),Color.BLUE);
+                if(board.hasWinningRow())
+                {
+                    for( Board.Place winPlace: board.winningRow())
+                    {
+                        discs[winPlace.x][winPlace.y] = player;
+                    }
+                }
+            }
+            else
+                discs[col][row] = player;
         });
     }
 
@@ -134,9 +148,12 @@ public class GameView extends View {
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getActionMasked()) {
             case MotionEvent.ACTION_DOWN:
+                if(board.hasWinningRow())
+                {
+                    break;
+                }
                 int index = locateDisc(event.getX(), event.getY());
-                if (index >= 0) { discClickListener.clicked(index);
-                    }
+                if (index >= 0) { discClickListener.clicked(index); }
                 break;
         }
         return true;
