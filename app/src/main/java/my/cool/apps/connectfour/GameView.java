@@ -1,6 +1,8 @@
 package my.cool.apps.connectfour;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -20,10 +22,14 @@ public class GameView extends View {
     private Player player = null;
     boolean turn = true;
     private Player[][] discs = new Player[7][6];
+    private Bitmap bitMap1,bitMap2;
 
     public GameView(Context context) {
         super(context);
         calculateWidthAndHeight();
+        bitMap1 = BitmapFactory.decodeResource(context.getResources(), R.drawable.ketchup);
+       // bitMap1.reconfigure(100,100,bitMap1.getConfig());
+        bitMap2 = BitmapFactory.decodeResource(context.getResources(), R.drawable.mustard);
     }
 
     private void calculateWidthAndHeight() {
@@ -45,9 +51,15 @@ public class GameView extends View {
         super.onDraw(canvas);
         Paint paint = new Paint();
         canvas.drawColor(Color.CYAN);
+
         /** Background of the board. */
         paint.setColor(Color.LTGRAY);
         canvas.drawRect(0,cellWidth,width,width,paint);
+        canvas.drawRect((cellWidth*4),(height/2)+(cellWidth*4),
+                (cellWidth*7)-10,height-cellWidth,paint);
+        paint.setTextSize(120);
+        paint.setColor(Color.MAGENTA);
+        canvas.drawText("New Game", cellWidth*4+20,height-cellWidth-120,paint);
         /** Draws the lines to form a grid
          * on the board. */
         paint.setColor(Color.DKGRAY);
@@ -75,21 +87,29 @@ public class GameView extends View {
         /** Draws the row of circles
          * at the top of board for player
          * to click on.*/
-        paint.setTextSize(150);
+        paint.setTextSize(80);
         if(board.hasWinningRow())
         {
             paint.setColor(Color.MAGENTA);
-            canvas.drawText(player.name() +" Has Won!!",(width/2)-550,(height/4)*3,paint);
+            canvas.drawText(player.name() +" Has Won!!",cellWidth*4,(height/4)*3,paint);
+        }
+        else if(board.isFull())
+        {
+            paint.setColor(Color.MAGENTA);
+            canvas.drawText("Oh No What ",cellWidth*4,(height/4)*3,paint);
+            canvas.drawText("Happened!?",cellWidth*4,(height/4)*3+80,paint);
         }
         else if(turn)
         {
             paint.setColor(Color.RED);
-            canvas.drawText("Player 1's Turn",(width/2)-500,(height/4)*3,paint);
+            canvas.drawText("Player 1's Turn",cellWidth*4,(height/4)*3,paint);
+            canvas.drawBitmap(bitMap1,50,(cellWidth*8),paint);
         }
         else
         {
             paint.setColor(Color.YELLOW);
-            canvas.drawText("Player 2's Turn",(width/2)-500,(height/4)*3,paint);
+            canvas.drawText("Player 2's Turn",cellWidth*4,(height/4)*3,paint);
+            canvas.drawBitmap(bitMap2,50,(cellWidth*8),paint);
         }
         float x = cellWidth / 2;
         float y = cellWidth / 2;
@@ -115,6 +135,8 @@ public class GameView extends View {
              }
          }
 
+
+
     }//end of onDraw()
 
     public boolean turnChange()
@@ -138,7 +160,7 @@ public class GameView extends View {
                     for( Board.Place winPlace: board.winningRow())
                     {
                         discs[winPlace.x][winPlace.y] = new Player(player.name(),Color.BLUE);
-                        turn = !turn;
+                        //turn = !turn;
                     }
                 }
             }
@@ -174,8 +196,10 @@ public class GameView extends View {
             case MotionEvent.ACTION_DOWN:
                 if(board.hasWinningRow())
                 {
+                    newGame(event.getX(), event.getY());
                     break;
                 }
+                newGame(event.getX(), event.getY());
                 int index = locateDisc(event.getX(), event.getY());
                 if (index >= 0) {
                     if(board.isColumnFull(index))
@@ -197,12 +221,26 @@ public class GameView extends View {
     {
         for(int i = 0;i< 7;i ++) {
             if(y <= (cellWidth ))
-                if( x<= (cellWidth *(i+1)))//x >= (cellWidth*i) &&)
+                if( x<= (cellWidth *(i+1)))
                 {
                     return i;
                 }
         }
         return -1;
+    }
+
+    public void newGame(float x, float y)
+    {
+
+        if(y >= (height/2)+(cellWidth*4) && x >= (cellWidth*4)) {
+            board.clear();
+            for (int i = 0; i < 7; i++) {
+                for (int j = 0; j < 6; j++) {
+                    discs[i][j] = null;
+                }
+            }
+            invalidate();
+        }
     }
 }
 
