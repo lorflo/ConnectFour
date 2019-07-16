@@ -16,6 +16,7 @@ public class GameView extends View {
     private int width, height, cellWidth,col = -1,row = -1; // width and height of this view in pixels
     private Board board;
     private Player player = null;
+    private Player[][] discs = new Player[7][6];
 
     public GameView(Context context) {
         super(context);
@@ -87,12 +88,21 @@ public class GameView extends View {
 
         /** Screen coordinates are mapped
          * to a cell on the board. */
+         for(int i = 0;i < 7;i++)
+         {
+             for(int j = 0;j < 6;j++)
+             {
+                 if(discs[i][j] != null)
+                 {
+                     paint.setColor(discs[i][j].color());
+                     canvas.drawCircle((cellWidth / 2) + i * cellWidth,
+                             (cellWidth * 3 / 2) + j * cellWidth,
+                             (float) ((cellWidth / 2) * .8), paint);
+                 }
+             }
+         }
 
-        if(col <= 6 && row <= 5) {
-            canvas.drawCircle((cellWidth / 2) + col * cellWidth,
-                    (cellWidth * 3 / 2) + row * cellWidth,
-                    (float) ((cellWidth / 2) * .8), paint);
-        }
+
 
     }//end of onDraw()
     public void setBoard(Board board)
@@ -105,6 +115,7 @@ public class GameView extends View {
                 row = r;
                 player = p;
             }
+            discs[col][row] = player;
         });
     }
 
