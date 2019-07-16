@@ -26,8 +26,13 @@ public class MainActivity extends AppCompatActivity {
         gameView.setBoard(board);
         setContentView(gameView);
 
+
+
         gameView.setDiscClickListener(index ->  {
-            board.dropDisc(index, players[0]);
+            if(gameView.turnChange() == true)
+                board.dropDisc(index, players[0]);
+            else
+                board.dropDisc(index,players[1]);
             gameView.invalidate();
         });
 

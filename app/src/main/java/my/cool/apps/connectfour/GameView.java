@@ -18,6 +18,7 @@ public class GameView extends View {
     private int width, height, cellWidth,col = -1,row = -1; // width and height of this view in pixels
     private Board board;
     private Player player = null;
+    boolean turn = true;
     private Player[][] discs = new Player[7][6];
 
     public GameView(Context context) {
@@ -73,13 +74,13 @@ public class GameView extends View {
         /** Draws the row of circles
          * at the top of board for player
          * to click on.*/
-        if(player == null)
+        if(turn)
         {
-            paint.setColor(Color.YELLOW);
+            paint.setColor(Color.RED);
         }
         else
         {
-            paint.setColor(player.color());
+            paint.setColor(Color.YELLOW);
         }
         float x = cellWidth / 2;
         float y = cellWidth / 2;
@@ -87,9 +88,10 @@ public class GameView extends View {
             canvas.drawCircle(x, y, (float)((cellWidth / 2)*.8), paint);
             x += cellWidth ;
         }
-
         /** Screen coordinates are mapped
          * to a cell on the board. */
+        if(player != null)
+        paint.setColor(player.color());
          for(int i = 0;i < 7;i++)
          {
              for(int j = 0;j < 6;j++)
@@ -104,9 +106,12 @@ public class GameView extends View {
              }
          }
 
-
-
     }//end of onDraw()
+
+    public boolean turnChange()
+    {
+        return turn;
+    }
     public void setBoard(Board board)
     {
         this.board = board;
@@ -119,12 +124,21 @@ public class GameView extends View {
             }
             if(board.isWonBy(player))
             {
-                player = new Player(player.name(),Color.BLUE);
                 if(board.hasWinningRow())
                 {
                     for( Board.Place winPlace: board.winningRow())
                     {
-                        discs[winPlace.x][winPlace.y] = player;
+                        discs[winPlace.x][winPlace.y] = new Player(player.name(),Color.BLUE);
+                    }
+                }
+            }
+            else if(board.isFull())
+            {
+                for(int i = 0;i < 7;i++)
+                {
+                    for(int j = 0;j < 6;j++)
+                    {
+                        discs[i][j] = new Player(player.name(),Color.BLUE);
                     }
                 }
             }
@@ -154,6 +168,9 @@ public class GameView extends View {
                 }
                 int index = locateDisc(event.getX(), event.getY());
                 if (index >= 0) { discClickListener.clicked(index); }
+                if(board.isColumnFull(index))
+                    break;
+                turn = !turn;
                 break;
         }
         return true;
